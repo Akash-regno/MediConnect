@@ -12,3 +12,5 @@ Use the following test card for demo transactions:
 - CVV: 123
 - OTP: 123456 (Auto-approved)
 These are official test details provided by Razorpay in test mode.
+![image](https://github.com/user-attachments/assets/7607808f-705d-444d-8538-09d418359bf9)
+
