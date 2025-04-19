@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Payment - MediConnect</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0066cc;
+            --primary-light: #e6f2ff;
+            --secondary: #004d99;
+            --accent: #00cc99;
+            --text: #333;
+            --text-light: #666;
+            --border: #e0e0e0;
+            --bg: #f9f9f9;
+            --white: #fff;
+            --success: #28a745;
+            --danger: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .payment-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .payment-header h1 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .payment-header p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        .payment-card {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .payment-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            background: var(--primary-light);
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .summary-details h3 {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-details p {
+            color: var(--text-light);
+        }
+
+        .summary-amount {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .payment-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .payment-options {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .payment-option {
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .payment-option:hover {
+            border-color: var(--primary);
+            box-shadow: 0 5px 15px rgba(0, 102, 204, 0.1);
+        }
+
+        .payment-option.selected {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+
+        .option-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .option-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.5rem;
+            color: var(--primary);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .option-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .option-content {
+            display: none;
+            margin-top: 1.5rem;
+        }
+
+        .payment-option.selected .option-content {
+            display: block;
+        }
+
+        .upi-apps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .upi-app {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .upi-app:hover {
+            border-color: var(--primary);
+        }
+
+        .upi-app.selected {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+
+        .upi-app img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            margin-bottom: 0.5rem;
+        }
+
+        .upi-app span {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--white);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary-light);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .secure-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1.5rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .secure-badge i {
+            color: var(--success);
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="payment-header">
+            <h1>Complete Your Payment</h1>
+            <p>Secure and hassle-free payment experience</p>
+        </div>
+
+        <div class="payment-card">
+            <div class="payment-summary">
+                <div class="summary-details">
+                    <h3 id="payment-description">Consultation Fee</h3>
+                    <p id="payment-doctor">Dr. Pyari Sharma</p>
+                </div>
+                <div class="summary-amount" id="payment-amount">₹1500</div>
+            </div>
+
+            <div class="payment-options">
+                <div class="payment-option selected" id="upiOption" onclick="selectPaymentOption('upi')">
+                    <div class="option-header">
+                        <div class="option-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="option-title">UPI Payment</div>
+                    </div>
+                    <div class="option-content" id="upiContent">
+                        <div class="form-group">
+                            <label for="upiId">Enter UPI ID</label>
+                            <input type="text" id="upiId" class="form-control" placeholder="yourname@upi">
+                        </div>
+                        
+                        <p style="margin-bottom: 1rem; color: var(--text-light);">Or select your UPI app:</p>
+                        <div class="upi-apps">
+                            <div class="upi-app" onclick="selectUpiApp(this, 'gpay')">
+                                <img src="gpay.png" alt="Google Pay">
+                                <span>Google Pay</span>
+                            </div>
+                            <div class="upi-app" onclick="selectUpiApp(this, 'phonepe')">
+                                <img src="phonepe.png" alt="PhonePe">
+                                <span>PhonePe</span>
+                            </div>
+                            <div class="upi-app" onclick="selectUpiApp(this, 'paytm')">
+                                <img src="paytm.png" alt="Paytm">
+                                <span>Paytm</span>
+                            </div>
+                            <div class="upi-app" onclick="selectUpiApp(this, 'amazonpay')">
+                                <img src="amazonpay.png" alt="Amazon Pay">
+                                <span>Amazon Pay</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="processUpiPayment()">
+                            <i class="fas fa-lock" style="margin-right: 8px;"></i> Pay via UPI
+                        </button>
+                    </div>
+                </div>
+
+                <div class="payment-option" id="razorpayOption" onclick="selectPaymentOption('razorpay')">
+                    <div class="option-header">
+                        <div class="option-icon">
+                            <i class="far fa-credit-card"></i>
+                        </div>
+                        <div class="option-title">Card Payment</div>
+                    </div>
+                    <div class="option-content" id="razorpayContent">
+                        <p style="margin-bottom: 1.5rem; color: var(--text-light);">
+                            Pay securely using credit/debit card, net banking, or other payment methods
+                        </p>
+                        <button class="btn btn-primary" id="rzp-button">
+                            <i class="fas fa-lock" style="margin-right: 8px;"></i> Pay with Razorpay
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="secure-badge">
+                <i class="fas fa-shield-alt"></i>
+                <span>Your payment is secured with 256-bit encryption</span>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <p>© 2023 MediConnect. All rights reserved.</p>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

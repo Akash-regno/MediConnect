@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - MediConnect</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        :root {
+            --primary-color: #0066cc;
+            --secondary-color: #004d99;
+            --accent-color: #00cc99;
+            --text-color: #333333;
+            --background-color: #ffffff;
+            --light-gray: #f5f5f5;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --white: #ffffff;
+            --error-color: #e74c3c;
+            --success-color: #2ecc71;
+
+            color-scheme: light;
+        }
+
+        :root.dark-theme {
+            --primary-color: #4d94ff;
+            --secondary-color: #3385ff;
+            --accent-color: #00ffbf;
+            --text-color: #e0e0e0;
+            --background-color: #121212;
+            --light-gray: #1e1e1e;
+            --shadow-color: rgba(255, 255, 255, 0.1);
+            --white: #121212;
+            --error-color: #ff6b6b;
+            --success-color: #6bff6b;
+
+            color-scheme: dark;
+        }
+
+        body {
+            min-height: 100vh;
+            line-height: 1.6;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+        
+        .dashboard-container {
+            display: flex;
+            min-height: calc(100vh - 80px);
+            margin-top: 80px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            margin-left: 250px;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: var(--background-color);
+            position: fixed;
+            left: 0;
+            top: 80px;
+            bottom: 0;
+            box-shadow: 2px 0 5px var(--shadow-color);
+            padding: 1.5rem;
+            overflow-y: auto;
+            z-index: 900;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            color: var(--text-color);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a:hover {
+            background-color: var(--light-gray);
+            color: var(--primary-color);
+        }
+
+        .sidebar-menu a.active {
+            background-color: var(--primary-color);
+            color: var(--background-color);
+        }
+
+        .sidebar-menu i {
+            margin-right: 0.75rem;
+            font-size: 1.2rem;
+        }
+
+        .theme-toggle {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            transition: all 0.5s ease;
+            overflow: hidden;
+        }
+
+        .theme-toggle::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, var(--accent-color) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            border-radius: 50%;
+        }
+
+        .theme-toggle:hover::before {
+            opacity: 0.3;
+        }
+
+        .theme-toggle:active::before {
+            opacity: 0.5;
+        }
+
+        .navbar {
+            background-color: var(--background-color);
+            box-shadow: 0 2px 5px var(--shadow-color);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.5s ease;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .theme-toggle:hover {
+            color: var(--primary-color);
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: var(--white);
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            transition: all 0.5s ease;
+        }
+
+        .btn-login {
+            background-color: var(--primary-color);
+            color: var(--white);
+            transition: background-color 0.5s ease;
+        }
+
+        .btn-signup {
+            background-color: var(--accent-color);
+            color: var(--white);
+            transition: background-color 0.5s ease;
+        }
+
+        .btn-payment {
+            background-color: #5cb85c;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            transition: color 0.5s ease;
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            transition: color 0.5s ease;
+        }
+
+        .appointment-container {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 2rem;
+            background-color: var(--background-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px var(--shadow-color);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: color 0.5s ease;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--shadow-color);
+            border-radius: 4px;
+            font-size: 1rem;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            transition: all 0.5s ease;
+        }
+
+        .form-group textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        .form-group .error-message {
+            color: var(--error-color);
+            font-size: 0.8rem;
+            margin-top: 0.3rem;
+            display: none;
+        }
+
+        .form-group.has-error input,
+        .form-group.has-error select,
+        .form-group.has-error textarea {
+            border-color: var(--error-color);
+        }
+
+        .form-group.has-error .error-message {
+            display: block;
+        }
+
+        .doctor-selection {
+            margin: 2rem 0;
+        }
+
+        .specialty-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+
+        .specialty-tab {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--shadow-color);
+            border-radius: 20px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .specialty-tab.active {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border-color: var(--primary-color);
+        }
+
+        .doctor-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .doctor-option {
+            border: 1px solid var(--shadow-color);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: var(--background-color);
+        }
+
+        .doctor-option:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        .doctor-option.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(0, 102, 204, 0.1);
+        }
+
+        .doctor-option img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 0.5rem;
+        }
+
+        .doctor-option h4 {
+            transition: color 0.5s ease;
+        }
+
+        .doctor-option p {
+            transition: color 0.5s ease;
+        }
+
+        .doctor-option .rating {
+            color: #ffc107;
+            margin: 0.3rem 0;
+        }
+
+        .doctor-option .fee {
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .appointment-slots {
+            margin: 2rem 0;
+        }
+
+        .slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .time-slot {
+            border: 1px solid var(--shadow-color);
+            border-radius: 4px;
+            padding: 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: var(--background-color);
+        }
+
+        .time-slot:hover {
+            border-color: var(--primary-color);
+        }
+
+        .time-slot.selected {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border-color: var(--primary-color);
+        }
+
+        .time-slot.unavailable {
+            background-color: var(--light-gray);
+            color: #999;
+            cursor: not-allowed;
+            text-decoration: line-through;
+        }
+
+        .payment-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            border: 1px solid var(--shadow-color);
+            border-radius: 8px;
+            background-color: var(--light-gray);
+        }
+
+        .confirmation-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .confirmation-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--background-color);
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-content i {
+            font-size: 4rem;
+            color: var(--success-color);
+            margin-bottom: 1rem;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 1rem;
+        }
+
+        .modal-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        .footer {
+            background-color: var(--secondary-color);
+            color: var(--white);
+            padding: 3rem 2rem;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            transition: color 0.5s ease;
+        }
+
+        /* Animation for theme change */
+        @keyframes themePulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .theme-toggle.active {
+            animation: themePulse 0.5s ease;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">MediConnect</a>
+            <div class="nav-links">
+                <button class="theme-toggle" aria-label="Toggle Theme">☀️</button>
+                <a href="profile.html" class="btn btn-secondary">My Profile</a>
+                <a href="logout.html" class="btn btn-login">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="appointments.html" class="active"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+                <li><a href="prescriptions.html"><i class="fas fa-prescription-bottle-alt"></i> Prescriptions</a></li>
+                <li><a href="doctors.html"><i class="fas fa-user-md"></i> Doctors</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <header class="page-header">
+                <h1>Book Your Appointment</h1>
+                <p>Schedule a consultation with our expert medical professionals</p>
+            </header>
+
+            <div class="appointment-container">
+                <form id="appointmentForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+                            <input type="text" id="firstName" name="firstName" required>
+                            <div class="error-message">Please enter your first name</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" id="lastName" name="lastName" required>
+                            <div class="error-message">Please enter your last name</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                            <div class="error-message">Please enter a valid email address</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" required>
+                            <div class="error-message">Please enter a valid phone number</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="dob">Date of Birth</label>
+                            <input type="date" id="dob" name="dob" required>
+                            <div class="error-message">Please enter your date of birth</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="gender">Gender</label>
+                            <select id="gender" name="gender" required>
+                                <option value="">Select Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                                <option value="prefer-not-to-say">Prefer not to say</option>
+                            </select>
+                            <div class="error-message">Please select your gender</div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="appointmentDate">Preferred Date</label>
+                            <input type="date" id="appointmentDate" name="appointmentDate" required min="">
+                            <div class="error-message">Please select a valid date</div>
+                        </div>
+                    </div>
+
+                    <div class="doctor-selection">
+                        <h3>Select a Specialty</h3>
+                        <div class="specialty-tabs">
+                            <div class="specialty-tab active" onclick="filterDoctors('all')">All Specialties</div>
+                            <div class="specialty-tab" onclick="filterDoctors('cardiology')">Cardiology</div>
+                            <div class="specialty-tab" onclick="filterDoctors('neurology')">Neurology</div>
+                            <div class="specialty-tab" onclick="filterDoctors('pediatrics')">Pediatrics</div>
+                            <div class="specialty-tab" onclick="filterDoctors('orthopedics')">Orthopedics</div>
+                            <div class="specialty-tab" onclick="filterDoctors('dermatology')">Dermatology</div>
+                            <div class="specialty-tab" onclick="filterDoctors('psychiatry')">Psychiatry</div>
+                        </div>
+                        
+                        <h3>Select a Doctor</h3>
+                        <div class="doctor-cards">
+                            <div class="doctor-option" data-specialty="cardiology" onclick="selectDoctor(this, 'Dr. Pyari Sharma', 1500)">
+                                <img src="profile.png" alt="Dr. Pyari">
+                                <h4>Dr. Pyari Sharma</h4>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                    <span>4.7</span>
+                                </div>
+                                <p>Cardiologist</p>
+                                <p class="fee">₹1500 consultation</p>
+                            </div>
+                            <div class="doctor-option" data-specialty="neurology" onclick="selectDoctor(this, 'Dr. Sendra Patel', 1800)">
+                                <img src="profile.png" alt="Dr. Sendra">
+                                <h4>Dr. Sendra Patel</h4>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <span>5.0</span>
+                                </div>
+                                <p>Neurologist</p>
+                                <p class="fee">₹1800 consultation</p>
+                            </div>
+                            <div class="doctor-option" data-specialty="pediatrics" onclick="selectDoctor(this, 'Dr. Khushi Gupta', 1200)">
+                                <img src="profile.png" alt="Dr. Khushi">
+                                <h4>Dr. Khushi Gupta</h4>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <span>4.2</span>
+                                </div>
+                                <p>Pediatrician</p>
+                                <p class="fee">₹1200 consultation</p>
+                            </div>
+                            <div class="doctor-option" data-specialty="orthopedics" onclick="selectDoctor(this, 'Dr. Rajan Kumar', 1600)">
+                                <img src="profile.png" alt="Dr. Rajan">
+                                <h4>Dr. Rajan Kumar</h4>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                    <span>4.6</span>
+                                </div>
+                                <p>Orthopedic Surgeon</p>
+                                <p class="fee">₹1600 consultation</p>
+                            </div>
+                            <div class="doctor-option" data-specialty="dermatology" onclick="selectDoctor(this, 'Dr. Meera Singh', 1400)">
+                                <img src="profile.png" alt="Dr. Meera">
+                                <h4>Dr. Meera Singh</h4>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <span>4.1</span>
+                                </div>
+                                <p>Dermatologist</p>
+                                <p class="fee">₹1400 consultation</p>
+                            </div>
+                            <div class="doctor-option" data-specialty="psychiatry" onclick="selectDoctor(this, 'Dr. Arjun Reddy', 1700)">
+                                <img src="profile.png" alt="Dr. Arjun">
+                                <h4>Dr. Arjun Reddy</h4>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <span>5.0</span>
+                                </div>
+                                <p>Psychiatrist</p>
+                                <p class="fee">₹1700 consultation</p>
+                            </div>
+                        </div>
+                        <input type="hidden" id="selectedDoctor" name="selectedDoctor">
+                        <input type="hidden" id="consultationFee" name="consultationFee">
+                    </div>
+
+                    <div class="appointment-slots">
+                        <h3>Available Time Slots</h3>
+                        <div class="slots-grid">
+                            <div class="time-slot" onclick="selectTimeSlot(this, '09:00 AM')">09:00 AM</div>
+                            <div class="time-slot" onclick="selectTimeSlot(this, '10:00 AM')">10:00 AM</div>
+                            <div class="time-slot" onclick="selectTimeSlot(this, '11:00 AM')">11:00 AM</div>
+                            <div class="time-slot" onclick="selectTimeSlot(this, '12:00 PM')">12:00 PM</div>
+                            <div class="time-slot" onclick="selectTimeSlot(this, '01:00 PM')">01:00 PM</div>
+                            <div class="time-slot" onclick="selectTimeSlot(this, '02:00 PM')">02:00 PM</div>
+                            <div class="time-slot" onclick="selectTimeSlot(this, '03:00 PM')">03:00 PM</div>
+                            <div class="time-slot" onclick="selectTimeSlot(this, '04:00 PM')">04:00 PM</div>
+                            <div class="time-slot" onclick="selectTimeSlot(this, '05:00 PM')">05:00 PM</div>
+                        </div>
+                        <input type="hidden" id="selectedTimeSlot" name="selectedTimeSlot">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="reason">Reason for Visit</label>
+                        <textarea id="reason" name="reason" placeholder="Please describe your symptoms or reason for appointment" required></textarea>
+                        <div class="error-message">Please describe the reason for your visit</div>
+                    </div>
+
+                    <div class="payment-section">
+                        <h3>Payment Information</h3>
+                        <p>Consultation fee: <span id="feeDisplay">₹0</span></p>
+                        
+                        <div class="form-group full-width" style="margin-top: 1rem;">
+                            <button type="button" class="btn btn-payment" onclick="validateAndProceedToPayment()">Proceed to Payment</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <div class="confirmation-modal" id="confirmationModal">
+        <div class="modal-content">
+            <i class="fas fa-check-circle"></i>
+            <h3>Appointment Confirmed!</h3>
+            <p id="confirmationDetails"></p>
+            <button class="btn btn-primary" onclick="closeConfirmationModal()">Done</button>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3></h3>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: contact@mediconnect.com</p>
+                <p>Phone: (123) 456-7890</p>
+                <p>Address: 123 Medical Drive, Healthcare City, HC 12345</p>
+            </div>
+            <div class="footer-section">
+                <h3>Emergency</h3>
+                <p>24/7 Emergency Line: (123) 456-7890</p>
+                <p>Ambulance Services Available</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const themeToggle = document.querySelector('.theme-toggle');
+        const htmlElement = document.documentElement;
+
+        const savedTheme = localStorage.getItem('mediconnect-theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+
+        function setThemeIcon() {
+            if (htmlElement.classList.contains('dark-theme')) {
+                themeToggle.textContent = '🌙';
+            } else {
+                themeToggle.textContent = '☀️';
+            }
+        }
+
+        if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark.matches)) {
+            htmlElement.classList.add('dark-theme');
+        }
+        setThemeIcon();
+        themeToggle.addEventListener('click', () => {
+            themeToggle.classList.add('active');
+            
+            setTimeout(() => {
+                htmlElement.classList.toggle('dark-theme');
+                const currentTheme = htmlElement.classList.contains('dark-theme') ? 'dark' : 'light';
+                localStorage.setItem('mediconnect-theme', currentTheme);
+                setThemeIcon();
+                
+                setTimeout(() => {
+                    themeToggle.classList.remove('active');
+                }, 500);
+            }, 100);
+        });
+
+        systemPrefersDark.addListener((e) => {
+            if (e.matches) {
+                htmlElement.classList.add('dark-theme');
+                localStorage.setItem('mediconnect-theme', 'dark');
+            } else {
+                htmlElement.classList.remove('dark-theme');
+                localStorage.setItem('mediconnect-theme', 'light');
+            }
+            setThemeIcon();
+        });
+
+        const today = new Date();
+        const dd = String(today.getDate()).padStart(2, '0');
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const yyyy = today.getFullYear();
+        const minDate = yyyy + '-' + mm + '-' + dd;
+        document.getElementById('appointmentDate').min = minDate;
+
+        let selectedDoctorFee = 0;
+
+        function filterDoctors(specialty) {
+            document.querySelectorAll('.specialty-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            document.querySelectorAll('.doctor-option').forEach(doctor => {
+                if (specialty === 'all' || doctor.dataset.specialty === specialty) {
+                    doctor.style.display = 'block';
+                } else {
+                    doctor.style.display = 'none';
+                }
+            });
+        }
+
+        function selectDoctor(element, doctorName, fee) {
+            document.querySelectorAll('.doctor-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            document.getElementById('selectedDoctor').value = doctorName;
+            document.getElementById('consultationFee').value = fee;
+            selectedDoctorFee = fee;
+            document.getElementById('feeDisplay').textContent = '₹' + fee;
+            
+            updateAvailableSlots(doctorName);
+        }
+
+        function updateAvailableSlots(doctorName) {
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                slot.classList.remove('unavailable');
+                const time = slot.textContent;
+                slot.onclick = function() { selectTimeSlot(this, time); };
+            });
+        }
+
+        function selectTimeSlot(element, timeSlot) {
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                slot.classList.remove('selected');
+            });
+
+            element.classList.add('selected');
+            document.getElementById('selectedTimeSlot').value = timeSlot;
+        }
+
+        function validateForm() {
+            let isValid = true;
+            
+            const requiredFields = [
+                'firstName', 'lastName', 'email', 'phone', 
+                'dob', 'gender', 'appointmentDate', 'reason'
+            ];
+            
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                const formGroup = field.closest('.form-group');
+                
+                if (!field.value.trim()) {
+                    formGroup.classList.add('has-error');
+                    isValid = false;
+                } else {
+                    formGroup.classList.remove('has-error');
+                    
+                    if (fieldId === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value)) {
+                        formGroup.classList.add('has-error');
+                        isValid = false;
+                    }
+                    
+                    if (fieldId === 'phone' && !/^[\d\s\-()+]{10,}$/.test(field.value)) {
+                        formGroup.classList.add('has-error');
+                        isValid = false;
+                    }
+                }
+            });
+            
+            if (!document.getElementById('selectedDoctor').value) {
+                alert('Please select a doctor.');
+                isValid = false;
+            }
+            
+            if (!document.getElementById('selectedTimeSlot').value) {
+                alert('Please select a time slot.');
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+
+        function validateAndProceedToPayment() {
+            if (validateForm()) {
+                const formData = {
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    dob: document.getElementById('dob').value,
+                    gender: document.getElementById('gender').value,
+                    appointmentDate: document.getElementById('appointmentDate').value,
+                    doctor: document.getElementById('selectedDoctor').value,
+                    timeSlot: document.getElementById('selectedTimeSlot').value,
+                    reason: document.getElementById('reason').value,
+                    fee: selectedDoctorFee
+                };
+                
+                sessionStorage.setItem('appointmentFormData', JSON.stringify(formData));
+                
+                window.open('payment.html', '_blank');
+            } else {
+                alert('Please fill in all required fields correctly before proceeding to payment.');
+            }
+        }
+
+        function showConfirmation() {
+            const doctor = document.getElementById('selectedDoctor').value;
+            const date = document.getElementById('appointmentDate').value;
+            const time = document.getElementById('selectedTimeSlot').value;
+            const fee = selectedDoctorFee;
+            
+            const formattedDate = new Date(date).toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            const confirmationText = `
+                Your appointment with ${doctor} has been confirmed for:<br><br>
+                <strong>${formattedDate} at ${time}</strong><br><br>
+                Consultation fee: <strong>₹${fee}</strong><br><br>
+                A confirmation has been sent to your email.
+            `;
+            
+            document.getElementById('confirmationDetails').innerHTML = confirmationText;
+            document.getElementById('confirmationModal').classList.add('active');
+        }
+
+        function closeConfirmationModal() {
+            document.getElementById('confirmationModal').classList.remove('active');
+            // Reset form
+            document.getElementById('appointmentForm').reset();
+            document.querySelectorAll('.doctor-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                slot.classList.remove('selected');
+            });
+            document.getElementById('feeDisplay').textContent = '₹0';
+        }
+
+        document.querySelectorAll('input, select, textarea').forEach(field => {
+            field.addEventListener('blur', function() {
+                const formGroup = this.closest('.form-group');
+                if (!this.value.trim() && this.hasAttribute('required')) {
+                    formGroup.classList.add('has-error');
+                } else {
+                    formGroup.classList.remove('has-error');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

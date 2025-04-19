@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediConnect</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        :root {
+            --primary-color: #0066cc;
+            --secondary-color: #004d99;
+            --accent-color: #00cc99;
+            --text-color: #333333;
+            --background-color: #ffffff;
+            --light-gray: #f5f5f5;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+
+            color-scheme: light;
+        }
+        :root.dark-theme {
+            --primary-color: #4d94ff;
+            --secondary-color: #3385ff;
+            --accent-color: #00ffbf;
+            --text-color: #e0e0e0;
+            --background-color: #121212;
+            --light-gray: #1e1e1e;
+            --shadow-color: rgba(255, 255, 255, 0.1);
+
+            color-scheme: dark;
+        }
+
+        body {
+            min-height: 100vh;
+            line-height: 1.6;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        .theme-toggle {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            transition: all 0.5s ease;
+            overflow: hidden;
+        }
+
+        .theme-toggle::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, var(--accent-color) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            border-radius: 50%;
+        }
+
+        .theme-toggle:hover::before {
+            opacity: 0.3;
+        }
+
+        .theme-toggle:active::before {
+            opacity: 0.5;
+        }
+
+        .navbar {
+            background-color: var(--background-color);
+            box-shadow: 0 2px 5px var(--shadow-color);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.5s ease;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .theme-toggle:hover {
+            color: var(--primary-color);
+        }
+        .slider-container {
+            width: 100%;
+            height: 450px;
+            position: relative;
+            overflow: hidden;
+            margin-top: 80px;
+        }
+
+        .slider {
+            display: flex;
+            width: 300%;
+            height: 100%;
+            animation: slide 25s infinite;
+        }
+
+        .slider img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        @keyframes slide {
+            0% { transform: translateX(0); }
+            33% { transform: translateX(-33.333%); }
+            66% { transform: translateX(-66.666%); }
+            100% { transform: translateX(0); }
+        }
+        .slider-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            z-index: 1;
+            width: 80%;
+        }
+
+        .slider-content h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .slider-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: var(--background-color);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border: 2px solid var(--background-color);
+            color: var(--background-color);
+        }
+
+        .btn-login {
+            background-color: var(--primary-color);
+            color: var(--background-color);
+        }
+
+        .btn-signup {
+            background-color: var(--accent-color);
+            color: var(--background-color);
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .services {
+            padding: 5rem 2rem;
+            background-color: var(--light-gray);
+            transition: background-color 0.5s ease;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--text-color);
+            transition: color 0.5s ease;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .service-card {
+            background-color: var(--background-color);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            transition: transform 0.3s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .service-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            transition: color 0.5s ease;
+        }
+
+        .doctors {
+            padding: 5rem 2rem;
+            background-color: var(--background-color);
+        }
+
+        .doctors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .doctor-card {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            background-color: var(--background-color);
+        }
+
+        .doctor-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-bottom: 1rem;
+            object-fit: cover;
+        }
+
+        .form-container {
+            max-width: 400px;
+            margin: 8rem auto;
+            padding: 2rem;
+            background-color: var(--background-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+            transition: color 0.5s ease;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .footer {
+            background-color: var(--secondary-color);
+            color: var(--background-color);
+            padding: 3rem 2rem;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            transition: color 0.5s ease;
+        }
+
+        .theme-toggle.active {
+            animation: themePulse 0.5s ease;
+        }
+
+        /* Chatbot Styles */
+        .chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            width: 350px;
+            max-height: 500px;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--background-color);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px var(--shadow-color);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            transform: translateY(100%);
+            opacity: 0;
+        }
+
+        .chatbot-container.open {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .chatbot-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .chatbot-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .chatbot-header button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            max-height: 350px;
+            background-color: var(--light-gray);
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 18px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            background-color: var(--primary-color);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+
+        .bot-message {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin-right: auto;
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 1px 3px var(--shadow-color);
+        }
+
+        .chatbot-input {
+            display: flex;
+            padding: 10px;
+            background-color: var(--background-color);
+            border-top: 1px solid var(--shadow-color);
+        }
+
+        .chatbot-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--shadow-color);
+            border-radius: 20px;
+            outline: none;
+            background-color: var(--light-gray);
+            color: var(--text-color);
+        }
+
+        .chatbot-input button {
+            margin-left: 10px;
+            padding: 10px 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .chatbot-input button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .chatbot-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            z-index: 1000;
+            border: none;
+        }
+
+        .chatbot-toggle:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .chatbot-toggle i {
+            font-size: 1.5rem;
+        }
+
+        .typing-indicator {
+            display: flex;
+            padding: 10px 15px;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            border-radius: 18px;
+            margin-right: auto;
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 1px 3px var(--shadow-color);
+            width: fit-content;
+        }
+
+        .typing-indicator span {
+            height: 8px;
+            width: 8px;
+            background-color: var(--text-color);
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            animation: typing 1s infinite ease-in-out;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">MediConnect</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="services.html">Services</a>
+                <a href="doctors.html">Doctors</a>
+                <button class="theme-toggle" aria-label="Toggle Theme"></button>
+                <a href="login.html" class="btn btn-login">Login</a>
+                <a href="signup.html" class="btn btn-signup">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+    <div class="slider-container">
+        <div class="slider">
+            <img src="b3.jpg">
+            <img src="b4.jpg">
+            <img src="b2.jpg">
+        </div>
+        <div class="slider-content">
+            <h1>Your Health, Our Priority</h1>
+            <p>Experience world-class healthcare with our team of expert medical professionals</p>
+            <a href="login.html" class="btn btn-primary">Book Appointment</a>
+        </div>
+    </div>
+    <section class="services" id="services">
+        <h2 class="section-title">Our Services</h2>
+        <div class="services-grid">
+            <div class="service-card">
+                <h3>Online Consultation</h3>
+                <p>Connect with our doctors from the comfort of your home through secure video consultations.</p>
+            </div>
+            <div class="service-card">
+                <h3>Emergency Care</h3>
+                <p>24/7 emergency medical services with rapid response teams and state-of-the-art facilities.</p>
+            </div>
+            <div class="service-card">
+                <h3>Lab Services</h3>
+                <p>Comprehensive laboratory testing services with quick and accurate results.</p>
+            </div>
+        </div>
+    </section>
+    <section class="doctors" id="doctors">
+        <h2 class="section-title">Our Doctors</h2>
+        <div class="doctors-grid">
+            <div class="doctor-card">
+                <img src="docter1.jpg" alt="Doctor" class="doctor-image">
+                <h3>Dr. Pyari</h3>
+                <p>Cardiologist</p>
+            </div>
+            <div class="doctor-card">
+                <img src="docter2.jpg" alt="Doctor" class="doctor-image">
+                <h3>Dr. Sendra</h3>
+                <p>Neurologist</p>
+            </div>
+            <div class="doctor-card">
+                <img src="docter3.jpg" alt="Doctor" class="doctor-image">
+                <h3>Dr. Khushi</h3>
+                <p>Pediatrician</p>
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: Mediconnect12@gamil.com</p>
+                <p>Phone: 00121012</p>
+                <p>Address: MediConnect,chennai city-600127</p>
+            </div>
+            <div class="footer-section">
+                <h3>Emergency</h3>
+                <p>24/7 Emergency Line: 00121012</p>
+                <p>Ambulance Services Available</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chatbot Elements -->
+    <button class="chatbot-toggle" id="chatbotToggle">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <div class="chatbot-container" id="chatbotContainer">
+        <div class="chatbot-header" id="chatbotHeader">
+            <h3>MediConnect Assistant</h3>
+            <button id="minimizeChatbot"><i class="fas fa-minus"></i></button>
+        </div>
+        <div class="chatbot-messages" id="chatbotMessages">
+            <div class="message bot-message">
+                Hello! I'm your MediConnect assistant. How can I help you today?
+            </div>
+        </div>
+        <div class="chatbot-input">
+            <input type="text" id="userInput" placeholder="Type your message..." autocomplete="off">
+            <button id="sendMessage"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script>
+        const themeToggle = document.querySelector('.theme-toggle');
+        const htmlElement = document.documentElement;
+
+        const savedTheme = localStorage.getItem('mediconnect-theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+        function setThemeIcon() {
+            if (htmlElement.classList.contains('dark-theme')) {
+                themeToggle.textContent = '🌙';
+            } else {
+                themeToggle.textContent = '☀️';
+            }
+        }
+        if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark.matches)) {
+            htmlElement.classList.add('dark-theme');
+        }
+        setThemeIcon();
+
+        themeToggle.addEventListener('click', () => {
+            themeToggle.classList.add('active');
+            
+            setTimeout(() => {
+                htmlElement.classList.toggle('dark-theme');
+                const currentTheme = htmlElement.classList.contains('dark-theme') ? 'dark' : 'light';
+                localStorage.setItem('mediconnect-theme', currentTheme);
+                setThemeIcon();
+                setTimeout(() => {
+                    themeToggle.classList.remove('active');
+                }, 500);
+            }, 100);
+        });
+
+        systemPrefersDark.addListener((e) => {
+            if (e.matches) {
+                htmlElement.classList.add('dark-theme');
+                localStorage.setItem('mediconnect-theme', 'dark');
+            } else {
+                htmlElement.classList.remove('dark-theme');
+                localStorage.setItem('mediconnect-theme', 'light');
+            }
+            setThemeIcon();
+        });
+
+        // Chatbot functionality
+        const GEMINI_API_KEY = 'ENTER_YOUR_GEMINI_API_KEY';
+        const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+
+        const chatbotToggle = document.getElementById('chatbotToggle');
+        const chatbotContainer = document.getElementById('chatbotContainer');
+        const minimizeChatbot = document.getElementById('minimizeChatbot');
+        const chatbotMessages = document.getElementById('chatbotMessages');
+        const userInput = document.getElementById('userInput');
+        const sendMessage = document.getElementById('sendMessage');
+
+        chatbotToggle.addEventListener('click', () => {
+            chatbotContainer.classList.toggle('open');
+        });
+
+        minimizeChatbot.addEventListener('click', () => {
+            chatbotContainer.classList.remove('open');
+        });
+        sendMessage.addEventListener('click', sendUserMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendUserMessage();
+            }
+        });
+        async function sendUserMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+            addMessage(message, 'user');
+            userInput.value = '';
+            showTypingIndicator();
+
+            try {
+                // Call Gemini API
+                const response = await fetch(`${GEMINI_URL}?key=${GEMINI_API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: `You are a medical assistant for MediConnect. Provide helpful, accurate medical information. If a question is beyond your knowledge, advise consulting a doctor. Be concise. Current question: ${message}`
+                            }]
+                        }]
+                    })
+                });
+                const data = await response.json();
+                // Remove typing indicator
+                removeTypingIndicator();
+                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                    const botResponse = data.candidates[0].content.parts[0].text;
+                    addMessage(botResponse, 'bot');
+                } else {
+                    addMessage("I'm sorry, I couldn't process your request. Please try again later.", 'bot');
+                }
+            } catch (error) {
+                console.error('Error calling Gemini API:', error);
+                removeTypingIndicator();
+                addMessage("I'm having trouble connecting to the server. Please try again later.", 'bot');
+            }
+        }
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
+            messageDiv.textContent = text;
+            chatbotMessages.appendChild(messageDiv);
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        }
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.classList.add('typing-indicator');
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = '<span></span><span></span><span></span>';
+            chatbotMessages.appendChild(typingDiv);
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        }
+        function removeTypingIndicator() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+        setTimeout(() => {
+            chatbotContainer.classList.add('open');
+        }, 3000);
+    </script>
+</body>
+</html>

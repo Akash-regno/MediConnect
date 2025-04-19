@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Confirmation - MediConnect</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0066cc;
+            --primary-light: #e6f2ff;
+            --secondary: #004d99;
+            --accent: #00cc99;
+            --text: #333;
+            --text-light: #666;
+            --border: #e0e0e0;
+            --bg: #f9f9f9;
+            --white: #fff;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background-color: var(--white);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            flex: 1;
+        }
+
+        .confirmation-card {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 3rem;
+            text-align: center;
+        }
+
+        .confirmation-icon {
+            width: 80px;
+            height: 80px;
+            background-color: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+            font-size: 2.5rem;
+        }
+
+        .confirmation-header h1 {
+            color: var(--success);
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+
+        .confirmation-header p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        .confirmation-details {
+            background: var(--primary-light);
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--primary);
+            min-width: 150px;
+        }
+
+        .detail-value {
+            color: var(--text);
+            flex: 1;
+        }
+
+        .payment-method {
+            display: inline-flex;
+            align-items: center;
+            background: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            margin-top: 1rem;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .payment-method i {
+            margin-right: 0.5rem;
+            color: var(--primary);
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 102, 204, 0.2);
+        }
+
+        .btn-outline {
+            background-color: var(--white);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-light);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            background-color: var(--white);
+            margin-top: 2rem;
+        }
+
+        .download-receipt {
+            margin-top: 1.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .download-receipt i {
+            margin-right: 0.5rem;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            .confirmation-card {
+                padding: 2rem 1.5rem;
+            }
+            .detail-row {
+                flex-direction: column;
+            }
+            
+            .detail-label {
+                margin-bottom: 0.3rem;
+            }
+            
+            .actions {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">MediConnect</a>
+    </nav>
+    <div class="container">
+        <div class="confirmation-card">
+            <div class="confirmation-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            
+            <div class="confirmation-header">
+                <h1>Payment Successful!</h1>
+                <p>Your appointment has been confirmed</p>
+                
+                <div id="payment-method-badge" class="payment-method">
+                    <i class="fas fa-credit-card"></i>
+                    <span id="payment-method-text">Credit Card</span>
+                </div>
+            </div>
+            
+            <div class="confirmation-details">
+                <h3 style="color: var(--primary); margin-bottom: 1.5rem; text-align: center;">Appointment Details</h3>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Amount Paid</div>
+                    <div class="detail-value" id="amount-paid">₹1500</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Doctor</div>
+                    <div class="detail-value" id="doctor-name">Dr. Pyari Sharma</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Appointment Date</div>
+                    <div class="detail-value" id="appointment-date">Friday, 15 September 2023 at 10:00 AM</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Patient Name</div>
+                    <div class="detail-value" id="patient-name">Rahul Sharma</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Contact Email</div>
+                    <div class="detail-value" id="patient-email">rahul@example.com</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Transaction ID</div>
+                    <div class="detail-value" id="transaction-id">TXN123456789</div>
+                </div>
+            </div>
+            
+            <a href="#" class="download-receipt" id="download-receipt">
+                <i class="fas fa-download"></i> Download Receipt
+            </a>
+            
+            <div class="actions">
+                <a href="dashboard.html" class="btn btn-primary">
+                    <i class="fas fa-home" style="margin-right: 8px;"></i> Back to Dashboard
+                </a>
+                <a href="appointments.html" class="btn btn-outline">
+                    <i class="fas fa-calendar-plus" style="margin-right: 8px;"></i> Book Another Appointment
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>© 2023 MediConnect. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.8rem;">
+            A confirmation has been sent to your email address
+        </p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const appointmentData = JSON.parse(sessionStorage.getItem('appointmentFormData'));
+            const paymentMethod = sessionStorage.getItem('paymentMethod');
+            const confirmationMessage = sessionStorage.getItem('confirmationMessage');
+            
+            if (!appointmentData || !paymentMethod) {
+                window.location.href = 'appointments.html';
+                return;
+            }
+            
+            const formattedDate = new Date(appointmentData.appointmentDate).toLocaleDateString('en-IN', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            
+            const paymentMethodText = paymentMethod === 'upi' ? 'UPI Payment' : 'Credit/Debit Card';
+            const paymentMethodIcon = paymentMethod === 'upi' ? 'fa-mobile-alt' : 'fa-credit-card';
+            
+            document.getElementById('payment-method-text').textContent = paymentMethodText;
+            document.getElementById('payment-method-badge').innerHTML = `
+                <i class="fas ${paymentMethodIcon}"></i>
+                <span>${paymentMethodText}</span>
+            `;
+            
+            document.getElementById('amount-paid').textContent = `₹${appointmentData.fee}`;
+            document.getElementById('doctor-name').textContent = appointmentData.doctor;
+            document.getElementById('appointment-date').textContent = 
+                `${formattedDate} at ${appointmentData.timeSlot}`;
+            document.getElementById('patient-name').textContent = 
+                `${appointmentData.firstName} ${appointmentData.lastName}`;
+            document.getElementById('patient-email').textContent = appointmentData.email;
+            
+
+            document.getElementById('transaction-id').textContent = 
+                `TXN${Math.floor(100000000 + Math.random() * 900000000)}`;
+            document.getElementById('download-receipt').addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Receipt download will be available after email delivery');
+            });
+            
+            sessionStorage.removeItem('paymentStatus');
+            sessionStorage.removeItem('paymentMethod');
+            sessionStorage.removeItem('confirmationMessage');
+        });
+        function generateReceipt() {
+        }
+    </script>
+</body>
+</html>

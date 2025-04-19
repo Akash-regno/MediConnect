@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Doctors - MediConnect</title>
+    <style>
+    
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        :root {
+            --primary-color: #0066cc;
+            --secondary-color: #004d99;
+            --accent-color: #00cc99;
+            --text-color: #333333;
+            --background-color: #ffffff;
+            --light-gray: #f5f5f5;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+
+            color-scheme: light;
+        }
+        :root.dark-theme {
+            --primary-color: #4d94ff;
+            --secondary-color: #3385ff;
+            --accent-color: #00ffbf;
+            --text-color: #e0e0e0;
+            --background-color: #121212;
+            --light-gray: #1e1e1e;
+            --shadow-color: rgba(255, 255, 255, 0.1);
+
+            color-scheme: dark;
+        }
+
+        body {
+            min-height: 100vh;
+            line-height: 1.6;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+       
+        .theme-toggle {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            transition: all 0.5s ease;
+            overflow: hidden;
+        }
+
+        .theme-toggle::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, var(--accent-color) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            border-radius: 50%;
+        }
+
+        .theme-toggle:hover::before {
+            opacity: 0.3;
+        }
+
+        .theme-toggle:active::before {
+            opacity: 0.5;
+        }
+
+        .navbar {
+            background-color: var(--background-color);
+            box-shadow: 0 2px 5px var(--shadow-color);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.5s ease;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .theme-toggle:hover {
+            color: var(--primary-color);
+        }
+
+        .hero {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--background-color);
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            transition: color 0.5s ease;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            transition: color 0.5s ease;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: var(--background-color);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border: 2px solid var(--background-color);
+            color: var(--background-color);
+        }
+
+        .btn-login {
+            background-color: var(--primary-color);
+            color: var(--background-color);
+        }
+
+        .btn-signup {
+            background-color: var(--accent-color);
+            color: var(--background-color);
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .doctors {
+            padding: 5rem 2rem;
+            background-color: var(--light-gray);
+            transition: background-color 0.5s ease;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--text-color);
+            transition: color 0.5s ease;
+        }
+
+        .doctors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .doctor-card {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            background-color: var(--background-color);
+            transition: transform 0.3s ease;
+        }
+
+        .doctor-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .doctor-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin-bottom: 1.5rem;
+            object-fit: cover;
+            border: 3px solid var(--accent-color);
+        }
+
+        .doctor-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+            transition: color 0.5s ease;
+        }
+
+        .doctor-specialty {
+            color: var(--accent-color);
+            font-weight: bold;
+            margin-bottom: 1rem;
+            transition: color 0.5s ease;
+        }
+
+        .doctor-bio {
+            margin-bottom: 1.5rem;
+        }
+
+        .doctor-detail {
+            padding: 5rem 2rem;
+            background-color: var(--background-color);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .doctor-profile {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .doctor-info h2 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .doctor-info .specialty {
+            color: var(--accent-color);
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .doctor-qualifications {
+            margin-top: 2rem;
+        }
+
+        .doctor-qualifications h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .doctor-qualifications ul {
+            margin-bottom: 2rem;
+        }
+
+        .doctor-qualifications li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer {
+            background-color: var(--secondary-color);
+            color: var(--background-color);
+            padding: 3rem 2rem;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            transition: color 0.5s ease;
+        }
+            
+            .doctor-image {
+                margin: 0 auto 2rem;
+            }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">MediConnect</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="services.html">Services</a>
+                <a href="doctors.html">Doctors</a>
+                <button class="theme-toggle" aria-label="Toggle Theme"></button>
+                <a href="login.html" class="btn btn-login">Login</a>
+                <a href="signup.html" class="btn btn-signup">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1>Meet Our Expert Doctors</h1>
+        <p>Our team of board-certified physicians and specialists are dedicated to providing you with the highest quality healthcare.</p>
+        <a href="login.html" class="btn btn-primary">Book Appointment</a>
+    </section>
+
+    <section class="doctors" id="doctors">
+        <h2 class="section-title">Our Medical Team</h2>
+        <div class="doctors-grid">
+            <div class="doctor-card">
+                <img src="docter1.jpg" alt="Dr. Pyari" class="doctor-image">
+                <h3>Dr. Pyari</h3>
+                <p class="doctor-specialty">Cardiologist</p>
+                <div class="doctor-bio">
+                    <p>Specializing in heart health and cardiovascular diseases with over 15 years of experience.</p>
+                </div>
+                <a href="#dr-pyari" class="btn btn-secondary">View Profile</a>
+            </div>
+            <div class="doctor-card">
+                <img src="docter2.jpg" alt="Dr. Sendra" class="doctor-image">
+                <h3>Dr. Sendra</h3>
+                <p class="doctor-specialty">Neurologist</p>
+                <div class="doctor-bio">
+                    <p>Expert in treating disorders of the nervous system with a focus on patient-centered care.</p>
+                </div>
+                <a href="#dr-sendra" class="btn btn-secondary">View Profile</a>
+            </div>
+            <div class="doctor-card">
+                <img src="docter3.jpg" alt="Dr. Khushi" class="doctor-image">
+                <h3>Dr. Khushi</h3>
+                <p class="doctor-specialty">Pediatrician</p>
+                <div class="doctor-bio">
+                    <p>Dedicated to children's health from newborns to adolescents with compassionate care.</p>
+                </div>
+                <a href="#dr-khushi" class="btn btn-secondary">View Profile</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="doctor-detail" id="dr-pyari">
+        <div class="doctor-profile">
+            <img src="docter1.jpg" alt="Dr. Pyari" class="doctor-image">
+            <div class="doctor-info">
+                <h2>Dr. Pyari</h2>
+                <span class="specialty">Cardiologist</span>
+                <p>Dr. Pyari is a board-certified cardiologist with over 15 years of experience in treating cardiovascular diseases. She completed her fellowship at the prestigious National Heart Institute and has published numerous research papers on preventive cardiology.</p>
+                
+                <div class="doctor-qualifications">
+                    <h3>Education & Qualifications</h3>
+                    <ul>
+                        <li>MD in Cardiology - National Medical College</li>
+                        <li>Fellowship in Interventional Cardiology</li>
+                        <li>Board Certified in Cardiovascular Disease</li>
+                    </ul>
+                    
+                    <h3>Special Interests</h3>
+                    <ul>
+                        <li>Preventive Cardiology</li>
+                        <li>Heart Failure Management</li>
+                        <li>Non-invasive Cardiology</li>
+                    </ul>
+                </div>
+                
+                <a href="login.html" class="btn btn-primary">Book Appointment</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="doctor-detail" id="dr-sendra" style="background-color: var(--light-gray);">
+        <div class="doctor-profile">
+            <div class="doctor-info">
+                <h2>Dr. Sendra</h2>
+                <span class="specialty">Neurologist</span>
+                <p>Dr. Sendra is a renowned neurologist specializing in the diagnosis and treatment of nervous system disorders. With extensive training from leading neurological institutes, she brings cutting-edge treatments to her patients.</p>
+                
+                <div class="doctor-qualifications">
+                    <h3>Education & Qualifications</h3>
+                    <ul>
+                        <li>MD in Neurology - Advanced Medical University</li>
+                        <li>Fellowship in Clinical Neurophysiology</li>
+                        <li>Board Certified in Neurology</li>
+                    </ul>
+                    
+                    <h3>Special Interests</h3>
+                    <ul>
+                        <li>Epilepsy and Seizure Disorders</li>
+                        <li>Multiple Sclerosis</li>
+                        <li>Neuromuscular Disorders</li>
+                    </ul>
+                </div>
+                
+                <a href="login.html" class="btn btn-primary">Book Appointment</a>
+            </div>
+            <img src="docter2.jpg" alt="Dr. Sendra" class="doctor-image">
+        </div>
+    </section>
+
+    <section class="doctor-detail" id="dr-khushi">
+        <div class="doctor-profile">
+            <img src="docter3.jpg" alt="Dr. Khushi" class="doctor-image">
+            <div class="doctor-info">
+                <h2>Dr. Khushi</h2>
+                <span class="specialty">Pediatrician</span>
+                <p>Dr. Khushi is a compassionate pediatrician dedicated to providing comprehensive healthcare for children from birth through adolescence. Her gentle approach and expertise make her a favorite among young patients and their parents.</p>
+                
+                <div class="doctor-qualifications">
+                    <h3>Education & Qualifications</h3>
+                    <ul>
+                        <li>MD in Pediatrics - Children's Medical College</li>
+                        <li>Fellowship in Pediatric Emergency Medicine</li>
+                        <li>Board Certified in Pediatrics</li>
+                    </ul>
+                    
+                    <h3>Special Interests</h3>
+                    <ul>
+                        <li>Newborn and Infant Care</li>
+                        <li>Childhood Immunizations</li>
+                        <li>Adolescent Medicine</li>
+                    </ul>
+                </div>
+                
+                <a href="login.html" class="btn btn-primary">Book Appointment</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: Mediconnect12@gamil.com</p>
+                <p>Phone: 00121012</p>
+                <p>Address: MediConnect,chennai city-600127</p>
+            </div>
+            <div class="footer-section">
+                <h3>Emergency</h3>
+                <p>24/7 Emergency Line: 00121012</p>
+                <p>Ambulance Services Available</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const themeToggle = document.querySelector('.theme-toggle');
+        const htmlElement = document.documentElement;
+        const savedTheme = localStorage.getItem('mediconnect-theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+
+        function setThemeIcon() {
+            if (htmlElement.classList.contains('dark-theme')) {
+                themeToggle.textContent = '🌙';
+            } else {
+                themeToggle.textContent = '☀️';
+            }
+        }
+
+        if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark.matches)) {
+            htmlElement.classList.add('dark-theme');
+        }
+        setThemeIcon();
+        themeToggle.addEventListener('click', () => {
+            themeToggle.classList.add('active');
+            
+            setTimeout(() => {
+                htmlElement.classList.toggle('dark-theme');
+                
+                const currentTheme = htmlElement.classList.contains('dark-theme') ? 'dark' : 'light';
+                localStorage.setItem('mediconnect-theme', currentTheme);
+                
+                setThemeIcon();
+                
+                setTimeout(() => {
+                    themeToggle.classList.remove('active');
+                }, 500);
+            }, 100);
+        });
+
+        systemPrefersDark.addListener((e) => {
+            if (e.matches) {
+                htmlElement.classList.add('dark-theme');
+                localStorage.setItem('mediconnect-theme', 'dark');
+            } else {
+                htmlElement.classList.remove('dark-theme');
+                localStorage.setItem('mediconnect-theme', 'light');
+            }
+            setThemeIcon();
+        });
+    </script>
+</body>
+</html>
